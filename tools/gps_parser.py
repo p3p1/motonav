@@ -30,6 +30,8 @@ def read_serial(serial_name):
 
 def gps_reader():
     fake = True
+    global lan
+    global lon
     if not fake:
         read_serial(serial_name_gps)
     else:
@@ -41,7 +43,8 @@ def gps_reader():
                 lon = msg.longitude
                 lat = msg.latitude
                 #return lon, lat
-                print('Longitude: ' + str(lon) + ' latitude: ' + str(lat))
+                #print('Longitude: ' + str(lon) + ' latitude: ' + str(lat))
+                return lon, lat
             except AttributeError:
                 pass
             i = i + 1

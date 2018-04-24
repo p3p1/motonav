@@ -482,9 +482,9 @@ class MPU9250:
 
         response = self.ReadRegs(self.__MPUREG_SELF_TEST_X, 4)
 
-        self.calib_data[0] = ((response[0] & 11100000) >> 3) | ((response[3] & 00110000) >> 4)
-        self.calib_data[1] = ((response[1] & 11100000) >> 3) | ((response[3] & 00001100) >> 2)
-        self.calib_data[2] = ((response[2] & 11100000) >> 3) | ((response[3] & 00000011))
+        #self.calib_data[0] = ((response[0] & 11100000) >> 3) | ((response[3] & 00110000) >> 4)
+        #self.calib_data[1] = ((response[1] & 11100000) >> 3) | ((response[3] & 00001100) >> 2)
+        #self.calib_data[2] = ((response[2] & 11100000) >> 3) | ((response[3] & 00000011))
 
         self.set_acc_scale(temp_scale)
 

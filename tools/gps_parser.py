@@ -2,10 +2,10 @@ import time
 from gps3 import agps3
 
 
-__author__    = 'p3p1'
+__author__ = 'p3p1'
 __copyright__ = 'Copyright 2018 p3p1'
-__license__   = 'MIT'
-__version__   = '0.1'
+__license__ = 'MIT'
+__version__ = '0.1'
 
 def gpsReader():
     gpsd_socket = agps3.GPSDSocket()

@@ -1,6 +1,7 @@
 import time
 from gps3 import agps3
 import pynmea2
+import numpy as np
 
 __author__ = 'p3p1'
 __copyright__ = 'Copyright 2018 p3p1'
@@ -28,10 +29,8 @@ def read_serial(serial_name):
                 print(msg)
 
 
-def gps_reader():
+def gps_reader(q):
     fake = True
-    global lan
-    global lon
     if not fake:
         read_serial(serial_name_gps)
     else:
@@ -42,9 +41,8 @@ def gps_reader():
             try:
                 lon = msg.longitude
                 lat = msg.latitude
-                #return lon, lat
-                #print('Longitude: ' + str(lon) + ' latitude: ' + str(lat))
-                return lon, lat
+                data_gps = np.array([lat, lon])
+                q.put(data_gps)
             except AttributeError:
                 pass
             i = i + 1

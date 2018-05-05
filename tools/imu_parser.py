@@ -1,5 +1,4 @@
 #from library.mpu9250 import MPU9250
-from fake_data.generate_imu import fake_imu_generator
 import time
 import numpy as np
 
@@ -9,6 +8,11 @@ __copyright__ = 'Copyright 2018 p3p1'
 __license__ = 'MIT'
 __version__ = '0.1'
 
+def fake_imu_generator():
+    m9a = np.random.rand([3,1])
+    m9g = np.random.rand([3,1])
+    m9m = np.random.rand([3,1])
+    return m9a, m9g, m9m
 
 def imu_reader(q):
     fake = True

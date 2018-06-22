@@ -49,7 +49,7 @@ destination = "Elsenheimerstraße 12, 80687 München"
 
 # Clients: decoding and directions from different API
 gmapsdec = googlemaps.Client(key='AIzaSyB2rlaAh6WWerqd7gdoSLy7FEe28DO5qHM')
-gmapsdir = googlemaps.Client(key='AIzaSyAp8jxy8GHeOJWYktGFCEfM14diGsGZ-yA')
+gmapsdir = googlemaps.Client(key='AIzaSyAp8jxy8GHeOJWyktGFCEfM14diGsGZ-yA')
 
 # Look up an address with reverse geocoding
 reverse_geocode_result = gmapsdec.reverse_geocode((current_gps_lat, current_gps_lon))

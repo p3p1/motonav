@@ -14,16 +14,16 @@ modification, are permitted provided that the following conditions are met:
     may be used to endorse or promote products derived from this software
     without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL EMLID LIMITED BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+THIS SOFTWARE IS PROVIDED By THE COPyRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANy ExPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITy AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL EMLID LIMITED BE LIABLE FOR ANy
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, ExEMPLARy, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ON ANy THEORy OF LIABILITy, WHETHER IN CONTRACT, STRICT LIABILITy, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANy WAy OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITy OF SUCH DAMAGE.
 """
 
 import spidev
@@ -37,32 +37,32 @@ class MPU9250:
     PI = 3.14159
 
     # MPU9250 registers
-    __MPUREG_XG_OFFS_TC = 0x00
-    __MPUREG_YG_OFFS_TC = 0x01
+    __MPUREG_xG_OFFS_TC = 0x00
+    __MPUREG_yG_OFFS_TC = 0x01
     __MPUREG_ZG_OFFS_TC = 0x02
-    __MPUREG_X_FINE_GAIN = 0x03
-    __MPUREG_Y_FINE_GAIN = 0x04
+    __MPUREG_x_FINE_GAIN = 0x03
+    __MPUREG_y_FINE_GAIN = 0x04
     __MPUREG_Z_FINE_GAIN = 0x05
-    __MPUREG_XA_OFFS_H = 0x06
-    __MPUREG_XA_OFFS_L = 0x07
-    __MPUREG_YA_OFFS_H = 0x08
-    __MPUREG_YA_OFFS_L = 0x09
+    __MPUREG_xA_OFFS_H = 0x06
+    __MPUREG_xA_OFFS_L = 0x07
+    __MPUREG_yA_OFFS_H = 0x08
+    __MPUREG_yA_OFFS_L = 0x09
     __MPUREG_ZA_OFFS_H = 0x0A
     __MPUREG_ZA_OFFS_L = 0x0B
     __MPUREG_PRODUCT_ID = 0x0C
-    __MPUREG_SELF_TEST_X = 0x0D
-    __MPUREG_SELF_TEST_Y = 0x0E
+    __MPUREG_SELF_TEST_x = 0x0D
+    __MPUREG_SELF_TEST_y = 0x0E
     __MPUREG_SELF_TEST_Z = 0x0F
     __MPUREG_SELF_TEST_A = 0x10
-    __MPUREG_XG_OFFS_USRH = 0x13
-    __MPUREG_XG_OFFS_USRL = 0x14
-    __MPUREG_YG_OFFS_USRH = 0x15
-    __MPUREG_YG_OFFS_USRL = 0x16
+    __MPUREG_xG_OFFS_USRH = 0x13
+    __MPUREG_xG_OFFS_USRL = 0x14
+    __MPUREG_yG_OFFS_USRH = 0x15
+    __MPUREG_yG_OFFS_USRL = 0x16
     __MPUREG_ZG_OFFS_USRH = 0x17
     __MPUREG_ZG_OFFS_USRL = 0x18
     __MPUREG_SMPLRT_DIV = 0x19
     __MPUREG_CONFIG = 0x1A
-    __MPUREG_GYRO_CONFIG = 0x1B
+    __MPUREG_GyRO_CONFIG = 0x1B
     __MPUREG_ACCEL_CONFIG = 0x1C
     __MPUREG_ACCEL_CONFIG_2      = 0x1D
     __MPUREG_LP_ACCEL_ODR        = 0x1E
@@ -89,49 +89,49 @@ class MPU9250:
     __MPUREG_I2C_MST_STATUS      = 0x36
     __MPUREG_INT_PIN_CFG = 0x37
     __MPUREG_INT_ENABLE = 0x38
-    __MPUREG_ACCEL_XOUT_H = 0x3B
-    __MPUREG_ACCEL_XOUT_L = 0x3C
-    __MPUREG_ACCEL_YOUT_H = 0x3D
-    __MPUREG_ACCEL_YOUT_L = 0x3E
+    __MPUREG_ACCEL_xOUT_H = 0x3B
+    __MPUREG_ACCEL_xOUT_L = 0x3C
+    __MPUREG_ACCEL_yOUT_H = 0x3D
+    __MPUREG_ACCEL_yOUT_L = 0x3E
     __MPUREG_ACCEL_ZOUT_H = 0x3F
     __MPUREG_ACCEL_ZOUT_L = 0x40
     __MPUREG_TEMP_OUT_H = 0x41
     __MPUREG_TEMP_OUT_L = 0x42
-    __MPUREG_GYRO_XOUT_H = 0x43
-    __MPUREG_GYRO_XOUT_L = 0x44
-    __MPUREG_GYRO_YOUT_H = 0x45
-    __MPUREG_GYRO_YOUT_L = 0x46
-    __MPUREG_GYRO_ZOUT_H = 0x47
-    __MPUREG_GYRO_ZOUT_L = 0x48
-    __MPUREG_EXT_SENS_DATA_00    = 0x49
-    __MPUREG_EXT_SENS_DATA_01    = 0x4A
-    __MPUREG_EXT_SENS_DATA_02    = 0x4B
-    __MPUREG_EXT_SENS_DATA_03    = 0x4C
-    __MPUREG_EXT_SENS_DATA_04    = 0x4D
-    __MPUREG_EXT_SENS_DATA_05    = 0x4E
-    __MPUREG_EXT_SENS_DATA_06    = 0x4F
-    __MPUREG_EXT_SENS_DATA_07    = 0x50
-    __MPUREG_EXT_SENS_DATA_08    = 0x51
-    __MPUREG_EXT_SENS_DATA_09    = 0x52
-    __MPUREG_EXT_SENS_DATA_10    = 0x53
-    __MPUREG_EXT_SENS_DATA_11    = 0x54
-    __MPUREG_EXT_SENS_DATA_12    = 0x55
-    __MPUREG_EXT_SENS_DATA_13    = 0x56
-    __MPUREG_EXT_SENS_DATA_14    = 0x57
-    __MPUREG_EXT_SENS_DATA_15    = 0x58
-    __MPUREG_EXT_SENS_DATA_16    = 0x59
-    __MPUREG_EXT_SENS_DATA_17    = 0x5A
-    __MPUREG_EXT_SENS_DATA_18    = 0x5B
-    __MPUREG_EXT_SENS_DATA_19    = 0x5C
-    __MPUREG_EXT_SENS_DATA_20    = 0x5D
-    __MPUREG_EXT_SENS_DATA_21    = 0x5E
-    __MPUREG_EXT_SENS_DATA_22    = 0x5F
-    __MPUREG_EXT_SENS_DATA_23    = 0x60
+    __MPUREG_GyRO_xOUT_H = 0x43
+    __MPUREG_GyRO_xOUT_L = 0x44
+    __MPUREG_GyRO_yOUT_H = 0x45
+    __MPUREG_GyRO_yOUT_L = 0x46
+    __MPUREG_GyRO_ZOUT_H = 0x47
+    __MPUREG_GyRO_ZOUT_L = 0x48
+    __MPUREG_ExT_SENS_DATA_00    = 0x49
+    __MPUREG_ExT_SENS_DATA_01    = 0x4A
+    __MPUREG_ExT_SENS_DATA_02    = 0x4B
+    __MPUREG_ExT_SENS_DATA_03    = 0x4C
+    __MPUREG_ExT_SENS_DATA_04    = 0x4D
+    __MPUREG_ExT_SENS_DATA_05    = 0x4E
+    __MPUREG_ExT_SENS_DATA_06    = 0x4F
+    __MPUREG_ExT_SENS_DATA_07    = 0x50
+    __MPUREG_ExT_SENS_DATA_08    = 0x51
+    __MPUREG_ExT_SENS_DATA_09    = 0x52
+    __MPUREG_ExT_SENS_DATA_10    = 0x53
+    __MPUREG_ExT_SENS_DATA_11    = 0x54
+    __MPUREG_ExT_SENS_DATA_12    = 0x55
+    __MPUREG_ExT_SENS_DATA_13    = 0x56
+    __MPUREG_ExT_SENS_DATA_14    = 0x57
+    __MPUREG_ExT_SENS_DATA_15    = 0x58
+    __MPUREG_ExT_SENS_DATA_16    = 0x59
+    __MPUREG_ExT_SENS_DATA_17    = 0x5A
+    __MPUREG_ExT_SENS_DATA_18    = 0x5B
+    __MPUREG_ExT_SENS_DATA_19    = 0x5C
+    __MPUREG_ExT_SENS_DATA_20    = 0x5D
+    __MPUREG_ExT_SENS_DATA_21    = 0x5E
+    __MPUREG_ExT_SENS_DATA_22    = 0x5F
+    __MPUREG_ExT_SENS_DATA_23    = 0x60
     __MPUREG_I2C_SLV0_DO         = 0x63
     __MPUREG_I2C_SLV1_DO         = 0x64
     __MPUREG_I2C_SLV2_DO         = 0x65
     __MPUREG_I2C_SLV3_DO         = 0x66
-    __MPUREG_I2C_MST_DELAY_CTRL  = 0x67
+    __MPUREG_I2C_MST_DELAy_CTRL  = 0x67
     __MPUREG_SIGNAL_PATH_RESET   = 0x68
     __MPUREG_MOT_DETECT_CTRL     = 0x69
     __MPUREG_USER_CTRL = 0x6A
@@ -146,10 +146,10 @@ class MPU9250:
     __MPUREG_FIFO_COUNTL = 0x73
     __MPUREG_FIFO_R_W = 0x74
     __MPUREG_WHOAMI = 0x75
-    __MPUREG_XA_OFFSET_H         = 0x77
-    __MPUREG_XA_OFFSET_L         = 0x78
-    __MPUREG_YA_OFFSET_H         = 0x7A
-    __MPUREG_YA_OFFSET_L         = 0x7B
+    __MPUREG_xA_OFFSET_H         = 0x77
+    __MPUREG_xA_OFFSET_L         = 0x78
+    __MPUREG_yA_OFFSET_H         = 0x7A
+    __MPUREG_yA_OFFSET_L         = 0x7B
     __MPUREG_ZA_OFFSET_H         = 0x7D
     __MPUREG_ZA_OFFSET_L         = 0x7E
 
@@ -162,10 +162,10 @@ class MPU9250:
     __AK8963_WIA                  = 0x00
     __AK8963_INFO                 = 0x01
     __AK8963_ST1                  = 0x02
-    __AK8963_HXL                  = 0x03
-    __AK8963_HXH                  = 0x04
-    __AK8963_HYL                  = 0x05
-    __AK8963_HYH                  = 0x06
+    __AK8963_HxL                  = 0x03
+    __AK8963_HxH                  = 0x04
+    __AK8963_HyL                  = 0x05
+    __AK8963_HyH                  = 0x06
     __AK8963_HZL                  = 0x07
     __AK8963_HZH                  = 0x08
     __AK8963_ST2                  = 0x09
@@ -179,17 +179,17 @@ class MPU9250:
     __AK8963_I2CDIS               = 0x0F
 
     # Read-only Reg ( ROM )
-    __AK8963_ASAX                 = 0x10
-    __AK8963_ASAY                 = 0x11
+    __AK8963_ASAx                 = 0x10
+    __AK8963_ASAy                 = 0x11
     __AK8963_ASAZ                 = 0x12
 
     # Configuration bits MPU9250
     __BIT_SLEEP = 0x40
     __BIT_H_RESET = 0x80
     __BITS_CLKSEL = 0x07
-    __MPU_CLK_SEL_PLLGYROX = 0x01
-    __MPU_CLK_SEL_PLLGYROZ = 0x03
-    __MPU_EXT_SYNC_GYROX = 0x02
+    __MPU_CLK_SEL_PLLGyROx = 0x01
+    __MPU_CLK_SEL_PLLGyROZ = 0x03
+    __MPU_ExT_SyNC_GyROx = 0x02
     __BITS_FS_250DPS              = 0x00
     __BITS_FS_500DPS              = 0x08
     __BITS_FS_1000DPS             = 0x10
@@ -208,8 +208,8 @@ class MPU9250:
     __BITS_DLPF_CFG_5HZ           = 0x06
     __BITS_DLPF_CFG_2100HZ_NOLPF  = 0x07
     __BITS_DLPF_CFG_MASK          = 0x07
-    __BIT_INT_ANYRD_2CLEAR        = 0x10
-    __BIT_RAW_RDY_EN              = 0x01
+    __BIT_INT_ANyRD_2CLEAR        = 0x10
+    __BIT_RAW_RDy_EN              = 0x01
     __BIT_I2C_IF_DIS              = 0x10
 
     __READ_FLAG   = 0x80
@@ -315,18 +315,18 @@ class MPU9250:
         [0x01, self.__MPUREG_PWR_MGMT_1],          # Clock Source
         [0x00, self.__MPUREG_PWR_MGMT_2],          # Enable Acc & Gyro
         [low_pass_filter, self.__MPUREG_CONFIG],   # Use DLPF set Gyroscope bandwidth 184Hz, temperature bandwidth 188Hz
-        [0x18, self.__MPUREG_GYRO_CONFIG],         # +-2000dps
+        [0x18, self.__MPUREG_GyRO_CONFIG],         # +-2000dps
         [0x08, self.__MPUREG_ACCEL_CONFIG],        # +-4G
         [0x09, self.__MPUREG_ACCEL_CONFIG_2],      # Set Acc Data Rates, Enable Acc LPF , Bandwidth 184Hz
         [0x30, self.__MPUREG_INT_PIN_CFG],
         #[0x40, self.__MPUREG_I2C_MST_CTRL],       # I2C Speed 348 kHz
-        #[0x20, self.__MPUREG_USER_CTRL],          # Enable AUX
+        #[0x20, self.__MPUREG_USER_CTRL],          # Enable AUx
         [0x20, self.__MPUREG_USER_CTRL],           # I2C Master mode
         [0x0D, self.__MPUREG_I2C_MST_CTRL],        #  I2C configuration multi-master  IIC 400KHz
 
         [self.__AK8963_I2C_ADDR, self.__MPUREG_I2C_SLV0_ADDR],  #Set the I2C slave addres of AK8963 and set for write.
         #[0x09, self.__MPUREG_I2C_SLV4_CTRL],
-        #[0x81, self.__MPUREG_I2C_MST_DELAY_CTRL], #Enable I2C delay
+        #[0x81, self.__MPUREG_I2C_MST_DELAy_CTRL], #Enable I2C delay
 
         [self.__AK8963_CNTL2, self.__MPUREG_I2C_SLV0_REG], #I2C slave 0 register address from where to begin data transfer
         [0x01, self.__MPUREG_I2C_SLV0_DO], # Reset AK8963
@@ -381,7 +381,7 @@ class MPU9250:
         return temp_scale
 
 # -----------------------------------------------------------------------------------------------
-#                                 GYROSCOPE SCALE
+#                                 GyROSCOPE SCALE
 # usage: call this function at startup, after initialization, to set the right range for the
 # gyroscopes. Suitable ranges are:
 # BITS_FS_250DPS
@@ -392,7 +392,7 @@ class MPU9250:
 # -----------------------------------------------------------------------------------------------
 
     def set_gyro_scale(self, scale):
-        self.WriteReg(self.__MPUREG_GYRO_CONFIG, scale)
+        self.WriteReg(self.__MPUREG_GyRO_CONFIG, scale)
         if (scale == self.__BITS_FS_250DPS):
             self.gyro_divider = 131.0
         elif (scale == self.__BITS_FS_500DPS):
@@ -402,7 +402,7 @@ class MPU9250:
         elif (scale == self.__BITS_FS_2000DPS):
             self.gyro_divider = 16.4
 
-        temp_scale = self.ReadReg(self.__MPUREG_GYRO_CONFIG)
+        temp_scale = self.ReadReg(self.__MPUREG_GyRO_CONFIG)
         if (temp_scale == self.__BITS_FS_250DPS):
             temp_scale = 250
         elif (temp_scale == self.__BITS_FS_500DPS):
@@ -427,28 +427,28 @@ class MPU9250:
 # -----------------------------------------------------------------------------------------------
 #                                 READ ACCELEROMETER
 # usage: call this function to read accelerometer data. Axis represents selected axis:
-# 0 -> X axis
-# 1 -> Y axis
+# 0 -> x axis
+# 1 -> y axis
 # 2 -> Z axis
 # -----------------------------------------------------------------------------------------------
 
     def read_acc(self):
-        response = self.ReadRegs(self.__MPUREG_ACCEL_XOUT_H, 6)
+        response = self.ReadRegs(self.__MPUREG_ACCEL_xOUT_H, 6)
 
         for i in range(0, 3):
             data = self.byte_to_float(response[i*2:i*2+2])
             self.accelerometer_data[i] = self.G_SI * data / self.acc_divider
 
 # -----------------------------------------------------------------------------------------------
-#                                 READ GYROSCOPE
+#                                 READ GyROSCOPE
 # usage: call this function to read gyroscope data. Axis represents selected axis:
-# 0 -> X axis
-# 1 -> Y axis
+# 0 -> x axis
+# 1 -> y axis
 # 2 -> Z axis
 # -----------------------------------------------------------------------------------------------
 
     def read_gyro(self):
-        response = self.ReadRegs(self.__MPUREG_GYRO_XOUT_H, 6)
+        response = self.ReadRegs(self.__MPUREG_GyRO_xOUT_H, 6)
 
         for i in range(0, 3):
             data = self.byte_to_float(response[i*2:i*2+2])
@@ -470,8 +470,8 @@ class MPU9250:
 # -----------------------------------------------------------------------------------------------
 #                                 READ ACCELEROMETER CALIBRATION
 # usage: call this function to read accelerometer data. Axis represents selected axis:
-# 0 -> X axis
-# 1 -> Y axis
+# 0 -> x axis
+# 1 -> y axis
 # 2 -> Z axis
 # returns Factory Trim value
 # -----------------------------------------------------------------------------------------------
@@ -480,7 +480,7 @@ class MPU9250:
         temp_scale = self.ReadReg(self.__MPUREG_ACCEL_CONFIG)
         self.set_acc_scale(self.__BITS_FS_8G)
 
-        response = self.ReadRegs(self.__MPUREG_SELF_TEST_X, 4)
+        response = self.ReadRegs(self.__MPUREG_SELF_TEST_x, 4)
 
         #self.calib_data[0] = ((response[0] & 11100000) >> 3) | ((response[3] & 00110000) >> 4)
         #self.calib_data[1] = ((response[1] & 11100000) >> 3) | ((response[3] & 00001100) >> 2)
@@ -498,7 +498,7 @@ class MPU9250:
         #self.WriteReg(self.__MPUREG_I2C_SLV0_CTRL, 0x81) # Enable I2C and set bytes
         time.sleep(0.01)
 
-        return self.ReadReg(self.__MPUREG_EXT_SENS_DATA_00) # Read I2C
+        return self.ReadReg(self.__MPUREG_ExT_SENS_DATA_00) # Read I2C
 
 # -----------------------------------------------------------------------------------------------
 
@@ -506,13 +506,13 @@ class MPU9250:
         # Set the I2C slave addres of AK8963 and set for read.
         self.WriteReg(self.__MPUREG_I2C_SLV0_ADDR, self.__AK8963_I2C_ADDR | self.__READ_FLAG)
         # I2C slave 0 register address from where to begin data transfer
-        self.WriteReg(self.__MPUREG_I2C_SLV0_REG, self.__AK8963_ASAX)
+        self.WriteReg(self.__MPUREG_I2C_SLV0_REG, self.__AK8963_ASAx)
         # Read 3 bytes from the magnetometer
         self.WriteReg(self.__MPUREG_I2C_SLV0_CTRL, 0x83)
 
         time.sleep(0.01)
 
-        response = self.ReadRegs(self.__MPUREG_EXT_SENS_DATA_00, 3)
+        response = self.ReadRegs(self.__MPUREG_ExT_SENS_DATA_00, 3)
 
         for i in range(0, 3):
             self.magnetometer_ASA[i] = ((float(response[i]) - 128)/256 + 1) * self.__Magnetometer_Sensitivity_Scale_Factor
@@ -523,13 +523,13 @@ class MPU9250:
         # Set the I2C slave addres of AK8963 and set for read.
         self.WriteReg(self.__MPUREG_I2C_SLV0_ADDR, self.__AK8963_I2C_ADDR | self.__READ_FLAG)
         # I2C slave 0 register address from where to begin data transfer
-        self.WriteReg(self.__MPUREG_I2C_SLV0_REG, self.__AK8963_HXL)
+        self.WriteReg(self.__MPUREG_I2C_SLV0_REG, self.__AK8963_HxL)
         # Read 6 bytes from the magnetometer
         self.WriteReg(self.__MPUREG_I2C_SLV0_CTRL, 0x87)
 
         time.sleep(0.01)
 
-        response = self.ReadRegs(self.__MPUREG_EXT_SENS_DATA_00, 7)
+        response = self.ReadRegs(self.__MPUREG_ExT_SENS_DATA_00, 7)
         #must start your read from AK8963A register 0x03 and read seven bytes so that upon read of ST2 register 0x09 the AK8963A will unlatch the data registers for the next measurement.
         for i in range(0, 3):
             data = self.byte_to_float_le(response[i*2:i*2+2])
@@ -542,13 +542,13 @@ class MPU9250:
         # Set the I2C slave addres of AK8963 and set for read.
         self.WriteReg(self.__MPUREG_I2C_SLV0_ADDR, self.__AK8963_I2C_ADDR | self.__READ_FLAG)
         # I2C slave 0 register address from where ; //Read 7 bytes from the magnetometerto begin data transfer
-        self.WriteReg(self.__MPUREG_I2C_SLV0_REG, self.__AK8963_HXL)
+        self.WriteReg(self.__MPUREG_I2C_SLV0_REG, self.__AK8963_HxL)
         # Read 7 bytes from the magnetometer
         self.WriteReg(self.__MPUREG_I2C_SLV0_CTRL, 0x87)
         # must start your read from AK8963A register 0x03 and read seven bytes so that upon read of ST2 register 0x09 the AK8963A will unlatch the data registers for the next measurement.
 
         # time.sleep(0.001)
-        response = self.ReadRegs(self.__MPUREG_ACCEL_XOUT_H, 21);
+        response = self.ReadRegs(self.__MPUREG_ACCEL_xOUT_H, 21);
 
         # Get Accelerometer values
         for i in range(0, 3):

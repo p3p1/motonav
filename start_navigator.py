@@ -1,46 +1,114 @@
 import threading
 from multiprocessing import Queue
-from tools.gps_parser import gps_reader
+import sys, time, datetime
+from display.main_lcd import lcd_gps_data, lcd_imu1_data, lcd_imu2_data
+import numpy as np
 from tools.imu_parser import imu_reader
-from router.router_reader import router_read_gps
-import sys
-from flask import Flask, Response
-from flask_compress import Compress
+from tools.gps_parser import gps_reader
+
 __author__ = 'p3p1'
 __copyright__ = 'Copyright 2018 p3p1'
 __license__ = 'MIT'
 __version__ = '0.1'
 
-__timeout_queue__ = 30
-__app__ = Flask(__name__)
-__app__.config(DEBUG=False, PROPAGATE_EXCEPTIONS=True)
-Compress(__app__)
+__timeout_queue__ = 3
+_timeout_gps_restart = 6000
+_timeout_gps_thread = 1
+_timeout_lcd_refresh_ = 30
+_timeout_save_data_ = 15
 
-def read_data(gps, imu):
+def str2float(s, decs):
+    try:
+        return np.around(float(s), decimals=decs)
+    except ValueError:
+        return float('nan')
+
+def print_on_lcd(gps_data, imu_data):
     while True:
-        gps_data = gps.get(__timeout_queue__)
-        imu_data = imu.get(__timeout_queue__)
-        print(gps_data)
-        print(imu_data)
+        _gps_packet = gps_data.get()
+        _imu_packet = imu_data.get()
+        print("GPS data")
+        print(_gps_packet)
+        print("IMU data")
+        print(_imu_packet)
+        lcd_imu1_data(_imu_packet)
+        time.sleep(_timeout_lcd_refresh_)
+        lcd_imu2_data(_imu_packet, _gps_packet)
+        time.sleep(_timeout_lcd_refresh_)
+        lcd_gps_data(_gps_packet)
+        time.sleep(_timeout_lcd_refresh_)
+        del _gps_packet, _imu_packet
 
-def run_jobs():
-    q_gps = Queue()
+def save_data(filename, gps_data, imu_data):
+    while True:
+        _gps_packet = gps_data.get()
+        _ins_packet = imu_data.get()
+
+        _imu_values = _ins_packet[0]
+
+        if (_imu_values[0] is None) or (_imu_values[1] is None) or (_imu_values[2] is None):
+            __yaw__ = 0
+            __pitch__ = 0
+            __roll__ =  0
+        else:
+            __yaw__ = np.around(float(np.rad2deg(_imu_values[0])), decimals=2)
+            __pitch__ = np.around(float(np.rad2deg(_imu_values[1])), decimals=2)
+            __roll__ = np.around(float(np.rad2deg(_imu_values[2])), decimals=2)
+
+        if (_ins_packet[1] is None) or (_ins_packet[2] is None) or (_ins_packet[3] is None):
+            __baro__ = 0
+            __temp__ = 0
+            __alt_baro__ = 0
+        else:
+            __baro__ = np.around(float(_ins_packet[1]), decimals=1)
+            __temp__ = np.around(float(_ins_packet[3]), decimals=1)
+            __alt_baro__ = np.around(float(_ins_packet[2]), decimals=1)
+
+        _gps_values = _gps_packet[0]
+        __lat__ = str2float(_gps_values[0], 5)
+        __lon__ = str2float(_gps_values[1], 5)
+        __alt__ = str2float(_gps_values[2], 5)
+        __mode__ = str2float(_gps_values[3], 0)
+        __hdg__ = str2float(_gps_values[4], 1)
+        __spd__ = str2float(_gps_values[5], 1)
+        __clb__ = str2float(_gps_values[6], 1)
+        __erx__ = str2float(_gps_values[7], 1)
+        __ery__ = str2float(_gps_values[8], 1)
+        __erz__ = str2float(_gps_values[9], 1)
+        __ert__ = str2float(_gps_values[10], 1)
+
+        __tmp_array__ = np.array([__yaw__, __pitch__, __roll__, __baro__, __temp__, __alt_baro__,
+                                  __lat__, __lon__, __alt__, __mode__, __hdg__, __spd__, __clb__,
+                                  __erx__, __ery__, __erz__, __ert__])
+        np.savez_compressed(filename, data=__tmp_array__)
+        time.sleep(_timeout_save_data_)
+        del __tmp_array__, _gps_packet, _ins_packet, _imu_values
+        del __yaw__, __pitch__, __roll__, __baro__, __temp__, __alt_baro__
+        del __lat__, __lon__, __alt__, __mode__, __hdg__, __spd__, __clb__
+        del __erx__, __ery__, __erz__, __ert__
+
+def run_threads():
     q_imu = Queue()
-    t_imu = threading.Thread(name='IMU Parsing', target=imu_reader, args=(q_imu, ), daemon=True)
-    t_gps = threading.Thread(name='GPS Parsing', target=gps_reader, args=(q_gps, ), daemon=True)
-    t_eink = threading.Thread(name='Reader data', target=read_data, args=(q_gps, q_imu ))
+    t_imu = threading.Thread(name='IMU Parsing', target=imu_reader, args=(q_imu, ))
+    q_gps = Queue()
+    t_gps = threading.Thread(name='GPS Parsing', target=gps_reader, args=(q_gps, ))
+    t_print = threading.Thread(name='Print data', target=print_on_lcd, args=(q_gps, q_imu, ))
+
+    filename = 'log_data/' + datetime.datetime.now().strftime("%Y-%m%-%d")
+    t_save = threading.Thread(name='Save data', target=save_data, args=(filename, q_gps, q_imu, ))
 
     t_imu.start()
+    t_print.start()
     t_gps.start()
-    t_eink.start()
+    t_save.start()
 
     t_imu.join()
+    t_print.join()
     t_gps.join()
-    t_eink.join()
-
+    t_save.join()
 
 if __name__ == '__main__':
     try:
-        run_jobs()
+        run_threads()
     except (KeyboardInterrupt, SystemExit):
         sys.exit()

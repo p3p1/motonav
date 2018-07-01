@@ -14,7 +14,7 @@ __version__ = '0.1'
 __timeout_queue__ = 3
 _timeout_gps_restart = 6000
 _timeout_gps_thread = 1
-_timeout_lcd_refresh_ = 30
+_timeout_lcd_refresh_ = 20
 _timeout_save_data_ = 15
 
 def str2float(s, decs):
@@ -31,10 +31,13 @@ def print_on_lcd(gps_data, imu_data):
         print(_gps_packet)
         print("IMU data")
         print(_imu_packet)
+        print('Screen IMU1')
         lcd_imu1_data(_imu_packet)
         time.sleep(_timeout_lcd_refresh_)
+        print('Screen IMU2')
         lcd_imu2_data(_imu_packet, _gps_packet)
         time.sleep(_timeout_lcd_refresh_)
+        print('Screen GPS')
         lcd_gps_data(_gps_packet)
         time.sleep(_timeout_lcd_refresh_)
         del _gps_packet, _imu_packet
@@ -94,18 +97,18 @@ def run_threads():
     t_gps = threading.Thread(name='GPS Parsing', target=gps_reader, args=(q_gps, ))
     t_print = threading.Thread(name='Print data', target=print_on_lcd, args=(q_gps, q_imu, ))
 
-    filename = 'log_data/' + datetime.datetime.now().strftime("%Y-%m%-%d")
-    t_save = threading.Thread(name='Save data', target=save_data, args=(filename, q_gps, q_imu, ))
+    #filename = 'log_data/' + datetime.datetime.now().strftime("%Y-%m%-%d")
+    #t_save = threading.Thread(name='Save data', target=save_data, args=(filename, q_gps, q_imu, ))
 
     t_imu.start()
     t_print.start()
     t_gps.start()
-    t_save.start()
+    #t_save.start()
 
     t_imu.join()
     t_print.join()
     t_gps.join()
-    t_save.join()
+    #t_save.join()
 
 if __name__ == '__main__':
     try:

@@ -14,40 +14,43 @@ __filename_fake_data__ = 'fake_data/random_240418.nmea'
 
 def gpsd_reader(gps_daemon, q):
     while True:
-        gps_packet = gps_daemon.get_current()
-        __lat__ = gps_packet.lat
-        __lon__ = gps_packet.lon
-        __alt__ = gps_packet.alt
-        __mode__ = gps_packet.mode
-        __hdg__ = gps_packet.track
-        __speed__ = gps_packet.hspeed
-        __climb__ = gps_packet.climb
         try:
-            __epx__ = gps_packet.error['x']
-        except KeyError:
-            __epx__ = 'n/a'
-        try:
-            __epy__ = gps_packet.error['y']
-        except KeyError:
-            __epy__ = 'n/a'
-        try:
-            __epv__ = gps_packet.error['v']
-        except KeyError:
-            __epv__ = 'n/a'
-        try:
-            __ept__ = gps_packet.error['t']
-        except KeyError:
-            __ept__ = 'n/a'
+            gps_packet = gps_daemon.get_current()
+            __lat__ = gps_packet.lat
+            __lon__ = gps_packet.lon
+            __alt__ = gps_packet.alt
+            __mode__ = gps_packet.mode
+            __hdg__ = gps_packet.track
+            __speed__ = gps_packet.hspeed
+            __climb__ = gps_packet.climb
+            try:
+                __epx__ = gps_packet.error['x']
+            except KeyError:
+                __epx__ = 'n/a'
+            try:
+                __epy__ = gps_packet.error['y']
+            except KeyError:
+                __epy__ = 'n/a'
+            try:
+                __epv__ = gps_packet.error['v']
+            except KeyError:
+                __epv__ = 'n/a'
+            try:
+                __ept__ = gps_packet.error['t']
+            except KeyError:
+                __ept__ = 'n/a'
 
-        #__sat__ = gps_packet.sats
-        __tmp_gps_vars__ = np.array([__lat__, __lon__, __alt__, __mode__, __hdg__, __speed__, __climb__,
-                                 __epx__, __epy__, __epv__, __ept__])
+            #__sat__ = gps_packet.sats
+            __tmp_gps_vars__ = np.array([__lat__, __lon__, __alt__, __mode__, __hdg__, __speed__, __climb__,
+                                         __epx__, __epy__, __epv__, __ept__])
 
-        __gps_vars__ = [__tmp_gps_vars__, gps_packet.get_time()]
-        q.put(__gps_vars__)
-        time.sleep(10)
-        del __gps_vars__, __tmp_gps_vars__, __lat__, __lon__, __alt__, __mode__, __hdg__, __speed__, __climb__, __epx__
-        del __epy__, __epv__, __ept__, gps_packet
+            __gps_vars__ = [__tmp_gps_vars__, gps_packet.get_time()]
+            q.put(__gps_vars__)
+            time.sleep(10)
+            del __gps_vars__, __tmp_gps_vars__, __lat__, __lon__, __alt__, __mode__, __hdg__, __speed__, __climb__, __epx__
+            del __epy__, __epv__, __ept__, gps_packet
+        except gps_daemon.NoFixError:
+            print('No GPS fix')
 
 #def gpsd_reader(q):
 #    __gps_socket__ = gps3.GPSDSocket()

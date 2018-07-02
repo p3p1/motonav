@@ -83,7 +83,6 @@ def lcd_imu1_data(ins_packet):
         _tmp_str_text = str(__roll__)  + u"\u00B0"
         _draw_red.text([330,260], text=_tmp_str_text, fill=0, font=fontserifbold[22])
 
-
     #------------------------------#
     #---- Artificial horizon ------#
     #------------------------------#
@@ -674,7 +673,7 @@ def lcd_gps_data(gps_packet):
 
     epd.display_frame(epd.get_frame_buffer(_image_black_gps),epd.get_frame_buffer(_image_red_gps))
 
-def init_lcd(imu_init_status, gps_init_status):
+def init_lcd(imu_init_status):
     epd = epd4in2b.EPD()
     epd.init()
 
@@ -695,14 +694,9 @@ def init_lcd(imu_init_status, gps_init_status):
 
 
     ##Init IMU
-    _draw_black.text((30, epd4in2b.EPD_HEIGHT+20), 'Initialization inertial ...', font=fontserifbold[30], fill=255)
+    _draw_black.text((30, epd4in2b.EPD_HEIGHT+20), 'Initialization inertial... please wait!', font=fontserifbold[30], fill=255)
     epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
 
-    _max_timeout = 100
-
-    _start_time_poll_data = time.time()
-    time.sleep(1)
-    _delta_time_poll_data = time.time() - _start_time_poll_data
 
     while (imu_init == False) and (_delta_time_poll_data <= _max_timeout):
         time.sleep(1)
@@ -715,25 +709,25 @@ def init_lcd(imu_init_status, gps_init_status):
     epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
 
 
-    ##Init GPS
-    _draw_black.text((30, epd4in2b.EPD_HEIGHT+20), 'Initialization GPS ...', font=fontserifbold[30], fill=255)
-    epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
+    ###Init GPS
+    #_draw_black.text((30, epd4in2b.EPD_HEIGHT+20), 'Initialization GPS ...', font=fontserifbold[30], fill=255)
+    #epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
 
-    _max_timeout = 300
+    #_max_timeout = 300
 
-    _start_time_poll_data = time.time()
-    time.sleep(1)
-    _delta_time_poll_data = time.time() - _start_time_poll_data
+    #_start_time_poll_data = time.time()
+    #time.sleep(1)
+    #_delta_time_poll_data = time.time() - _start_time_poll_data
 
-    while (imu_init == False) and (_delta_time_poll_data <= _max_timeout):
-        time.sleep(1)
-        _delta_time_poll_data = time.time() - _start_time_poll_data
+    #while (imu_init == False) and (_delta_time_poll_data <= _max_timeout):
+    #    time.sleep(1)
+    #    _delta_time_poll_data = time.time() - _start_time_poll_data
 
-    if _delta_time_poll_data > _max_timeout:
-        _draw_black.text((230, epd4in2b.EPD_HEIGHT+20), 'NO DATA FROM GPS!!!', font=fontserifbold[30], fill=255)
-    else:
-        _draw_black.text((230, epd4in2b.EPD_HEIGHT+20), 'OK!!!', font=fontserifbold[30], fill=255)
-    epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
+    #if _delta_time_poll_data > _max_timeout:
+    #    _draw_black.text((230, epd4in2b.EPD_HEIGHT+20), 'NO DATA FROM GPS!!!', font=fontserifbold[30], fill=255)
+    #else:
+    #    _draw_black.text((230, epd4in2b.EPD_HEIGHT+20), 'OK!!!', font=fontserifbold[30], fill=255)
+    #epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
 
 #if __name__ == '__main__':
 #    try:

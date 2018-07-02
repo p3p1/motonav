@@ -5,7 +5,7 @@ from display.main_lcd import lcd_gps_data, lcd_imu1_data, lcd_imu2_data
 import numpy as np
 from tools.imu_parser import imu_reader
 from tools.gps_parser import gps_reader
-
+from tools.imu_init import  imu_mean_generator
 __author__ = 'p3p1'
 __copyright__ = 'Copyright 2018 p3p1'
 __license__ = 'MIT'
@@ -22,6 +22,7 @@ def str2float(s, decs):
         return np.around(float(s), decimals=decs)
     except ValueError:
         return float('nan')
+def init_on_lcd(imu_status):
 
 def print_on_lcd(gps_data, imu_data):
     while True:
@@ -90,6 +91,12 @@ def save_data(filename, gps_data, imu_data):
         del __lat__, __lon__, __alt__, __mode__, __hdg__, __spd__, __clb__
         del __erx__, __ery__, __erz__, __ert__
 
+def init_nav():
+    q_stat_bias_imu = Queue()
+    t_init_imu = threading.Thread(name='Init IMU', target=imu_mean_generator, args=q_stat_bias_imu)
+    t_init_imu.start()
+    t_init_imu.join()
+
 def run_threads():
     q_imu = Queue()
     t_imu = threading.Thread(name='IMU Parsing', target=imu_reader, args=(q_imu, ))
@@ -112,6 +119,7 @@ def run_threads():
 
 if __name__ == '__main__':
     try:
-        run_threads()
+        init_nav()
+        #run_threads()
     except (KeyboardInterrupt, SystemExit):
         sys.exit()

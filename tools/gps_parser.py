@@ -10,7 +10,6 @@ __license__ = 'MIT'
 __version__ = '0.1'
 
 __filename_fake_data__ = 'fake_data/random_240418.nmea'
-#__serial_name_gps__ = '/dev/ttyS0'
 
 def gpsd_reader(gps_daemon, q):
     while True:
@@ -46,10 +45,30 @@ def gpsd_reader(gps_daemon, q):
 
             __gps_vars__ = [__tmp_gps_vars__, gps_packet.get_time()]
             q.put(__gps_vars__)
-            time.sleep(10)
+            time.sleep(1)
             del __gps_vars__, __tmp_gps_vars__, __lat__, __lon__, __alt__, __mode__, __hdg__, __speed__, __climb__, __epx__
             del __epy__, __epv__, __ept__, gps_packet
         except gps_daemon.NoFixError:
+            __lat__ = 'n/a'
+            __lon__ = 'n/a'
+            __alt__ = 'n/a'
+            __mode__ = 1
+            __hdg__ = 'n/a'
+            __speed__ = 'n/a'
+            __climb__ = 'n/a'
+            __epx__ = 'n/a'
+            __epy__ = 'n/a'
+            __epv__ = 'n/a'
+            __ept__ = 'n/a'
+            _gps_time__ = 'n/a'
+            __tmp_gps_vars__ = np.array([__lat__, __lon__, __alt__, __mode__, __hdg__, __speed__, __climb__,
+                                         __epx__, __epy__, __epv__, __ept__])
+
+            __gps_vars__ = [__tmp_gps_vars__, _gps_time__]
+            q.put(__gps_vars__)
+            time.sleep(1)
+            del __gps_vars__, __tmp_gps_vars__, __lat__, __lon__, __alt__, __mode__, __hdg__, __speed__, __climb__, __epx__
+            del __epy__, __epv__, __ept__, gps_packet
             print('No GPS fix')
 
 #def gpsd_reader(q):

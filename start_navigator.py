@@ -14,7 +14,7 @@ __version__ = '0.1'
 __timeout_queue__ = 3
 _timeout_gps_restart = 6000
 _timeout_gps_thread = 1
-_timeout_lcd_refresh_ = 20
+_timeout_lcd_refresh_ = 4
 _timeout_save_data_ = 15
 
 def str2float(s, decs):
@@ -22,7 +22,6 @@ def str2float(s, decs):
         return np.around(float(s), decimals=decs)
     except ValueError:
         return float('nan')
-def init_on_lcd(imu_status):
 
 def print_on_lcd(gps_data, imu_data):
     while True:
@@ -119,7 +118,7 @@ def run_threads():
 
 if __name__ == '__main__':
     try:
-        init_nav()
-        #run_threads()
+        #init_nav()
+        run_threads()
     except (KeyboardInterrupt, SystemExit):
         sys.exit()

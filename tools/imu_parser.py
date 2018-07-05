@@ -123,8 +123,8 @@ def imu_reader(q):
 
             _ins_values = [_imu_values, _curr_altitude, _curr_pressure, _curr_temp]
             q.put(_ins_values)
-            time.sleep(10)
-                del _ins_values, _curr_temp, _curr_altitude, _curr_pressure, _imu_values
+            time.sleep(1)
+            del _ins_values, _curr_temp, _curr_altitude, _curr_pressure, _imu_values
         else:
             _m9a, _m9g, _m9m, _temp, _press, _alt = fake_imu_generator()
             _imu_values = np.array([_m9a, _m9g, _m9m])

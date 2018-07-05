@@ -95,7 +95,7 @@ def lcd_imu1_data(ins_packet):
     ###Lower semi-circle, outer and inner
     _coord_circle = []
     #Calulate delta_angle for pitch angle
-    _delta_angle_rad = np.arcsin(((np.deg2rad(__pitch__))/_inner_r))
+    _delta_angle_rad = np.arcsin(__pitch__/_inner_r)
     _delta_angle_deg = np.rad2deg(_delta_angle_rad)
     _delta_angle_deg = int(_delta_angle_deg)
     for i in np.arange(0-_delta_angle_deg,180+_delta_angle_deg):
@@ -568,50 +568,58 @@ def lcd_gps_data(gps_packet):
     #_sat_list = gps_packet[1]
     _sat_list = []
     _gps_data = gps_packet[0]
-    _gps_time = gps_packet[1].strftime("%d.%m.%y %H:%M")
 
-    _lat = str2float(_gps_data[0], 5)
-    [_lat_min, _lat_deg] = np.modf(_lat)
-    [_lat_sec, _lat_min] = np.modf(_lat_min*60)
-    _lat_str = str(int(_lat_deg)) + u'\u00B0' + str(int(_lat_min)) + "'" + str(np.around(_lat_sec*60, decimals=1)) + 'N'
+    if int(_gps_data[3]) == 1:
+        _nmode_str = 'No GPS fix'
+        _nlat_str = 'No GPS fix!'
+        _nlon_str = 'No GPS fix!'
+        _nalt_str = 'No GPS fix!'
+        _nhdg_str = 'n/a'
+        _nspd_str = 'n/a'
+        _nclb_str = 'n/a'
+        _nerx_str = 'n/a'
+        _nery_str = 'n/a'
+        _nerz_str = 'n/a'
+        _nert_str = 'n/a'
+        _ngps_time_str = 'n/a'
+    elif int(_gps_data[3]) == 2 or int(_gps_data[3]) == 3:
+        if int(_gps_data[3]) == 2:
+            _nmode_str = '2D Fix'
+        elif int(_gps_data[3]) == 3:
+            _nmode_str = '3D Fix'
+        _ngps_time_str = gps_packet[1].strftime("%d.%m.%y %H:%M")
 
-    _lon = str2float(_gps_data[1], 5)
-    [_lon_min, _lon_deg] = np.modf(_lon)
-    [_lon_sec, _lon_min] = np.modf(_lon_min*60)
-    _lon_str = str(int(_lon_deg)) + u'\u00B0' + str(int(_lon_min)) + "'" + str(np.around(_lon_sec*60, decimals=1)) + 'E'
+        _lat = str2float(_gps_data[0], 5)
+        [_lat_min, _lat_deg] = np.modf(_lat)
+        [_lat_sec, _lat_min] = np.modf(_lat_min*60)
+        _nlat_str = str(int(_lat_deg)) + u'\u00B0' + str(int(_lat_min)) + "'" + str(np.around(_lat_sec*60, decimals=1)) + 'N'
 
-    _alt_str = str(str2float(_gps_data[2], 5)) + ' m'
-    if _gps_data[3] == 'n/a':
-        _mode_str = 'n/a'
-    else:
-        _mode_str = int(_gps_data[3])
-        if _mode_str == 1:
-            _mode_str = 'No Fix!'
-        elif _mode_str == 2:
-            _mode_str = '2D Fix'
-        elif _mode_str == 3:
-            _mode_str = '3D Fix'
+        _lon = str2float(_gps_data[1], 5)
+        [_lon_min, _lon_deg] = np.modf(_lon)
+        [_lon_sec, _lon_min] = np.modf(_lon_min*60)
+        _nlon_str = str(int(_lon_deg)) + u'\u00B0' + str(int(_lon_min)) + "'" + str(np.around(_lon_sec*60, decimals=1)) + 'E'
 
-    _hdg_str = str(str2float(_gps_data[4], 1)) + u'\u00B0'
-    _spd_str = str(str2float(_gps_data[5], 1)) + ' m/s'
-    _clb_str = str(str2float(_gps_data[6], 1)) + ' m/s'
-    _erx_str = str(str2float(_gps_data[7], 1)) + ' m'
-    _ery_str = str(str2float(_gps_data[8], 1)) + ' m'
-    _erz_str = str(str2float(_gps_data[9], 1)) + ' m'
-    _ert_str = str(str2float(_gps_data[10], 1)) + ' s'
+        _nalt_str = str(str2float(_gps_data[2], 5)) + ' m'
+        _nhdg_str = str(str2float(_gps_data[4], 1)) + u'\u00B0'
+        _nspd_str = str(str2float(_gps_data[5], 1)) + ' m/s'
+        _nclb_str = str(str2float(_gps_data[6], 1)) + ' m/s'
+        _nerx_str = str(str2float(_gps_data[7], 1)) + ' m'
+        _nery_str = str(str2float(_gps_data[8], 1)) + ' m'
+        _nerz_str = str(str2float(_gps_data[9], 1)) + ' m'
+        _nert_str = str(str2float(_gps_data[10], 1)) + ' s'
 
-    _draw_red.text((70, 40), _lat_str, font=fontserifbold[24], fill=0)
-    _draw_red.text((70, 65), _lon_str, font=fontserifbold[24], fill=0)
-    _draw_red.text((70, 90), _alt_str, font=fontserifbold[22], fill=0)
-    _draw_red.text((70, 115), _mode_str, font=fontserifbold[18], fill=0)
-    _draw_red.text((85, 160), _spd_str, font=fontserifbold[24], fill=0)
-    _draw_red.text((105, 190), _hdg_str, font=fontserifbold[24], fill=0)
-    _draw_red.text((95, 220), _clb_str, font=fontserifbold[24], fill=0)
-    _draw_red.text((95, 250), _erx_str, font=fontserifbold[22], fill=0)
-    _draw_red.text((95, 275), _erz_str, font=fontserifbold[22], fill=0)
-    _draw_red.text((265, 250), _ery_str, font=fontserifbold[22], fill=0)
-    _draw_red.text((265, 275), _ert_str, font=fontserifbold[22], fill=0)
-    _draw_red.text((70, 135), _gps_time, font=fontserifbold[18], fill=0)
+    _draw_red.text((70, 40), _nlat_str, font=fontserifbold[24], fill=0)
+    _draw_red.text((70, 65), _nlon_str, font=fontserifbold[24], fill=0)
+    _draw_red.text((70, 90), _nalt_str, font=fontserifbold[22], fill=0)
+    _draw_red.text((70, 115), _nmode_str, font=fontserifbold[18], fill=0)
+    _draw_red.text((85, 160), _nspd_str, font=fontserifbold[24], fill=0)
+    _draw_red.text((105, 190), _nhdg_str, font=fontserifbold[24], fill=0)
+    _draw_red.text((95, 220), _nclb_str, font=fontserifbold[24], fill=0)
+    _draw_red.text((95, 250), _nerx_str, font=fontserifbold[22], fill=0)
+    _draw_red.text((95, 275), _nerz_str, font=fontserifbold[22], fill=0)
+    _draw_red.text((265, 250), _nery_str, font=fontserifbold[22], fill=0)
+    _draw_red.text((265, 275), _nert_str, font=fontserifbold[22], fill=0)
+    _draw_red.text((70, 135), _ngps_time_str, font=fontserifbold[18], fill=0)
 
 
     _draw_black.line((10, 160, 205, 160), fill=0)

@@ -63,7 +63,7 @@ def lcd_imu1_data(ins_packet):
     _draw_black.line((10, 240, 390, 240), fill=0)
     _draw_black.line((200, 40, 200, 240), fill=0)
 
-    _imu_values = ins_packet[0]
+    _imu_values = ins_packet[0:3]
     if (_imu_values[0] is None) or (_imu_values[1] is None) or (_imu_values[2] is None):
         __yaw__ = 0
         __pitch__ = 0
@@ -310,7 +310,7 @@ def lcd_imu1_data(ins_packet):
     #--- Plot results on e-ink ----#
     #------------------------------#
     epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
-
+    del _imu_values
 def lcd_imu2_data(ins_packet, gps_packet):
     epd = epd4in2b.EPD()
     epd.init()

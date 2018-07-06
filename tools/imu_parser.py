@@ -100,12 +100,9 @@ def imu_reader(q):
             _y_yaw = (_mag_y * np.cos(_roll)) - (_mag_z*np.sin(_roll))
             _x_yaw = (_mag_x * np.cos(_pitch)) + (_mag_y*np.sin(_roll)*np.sin(_pitch)) + (_mag_z*np.cos(_roll)*np.sin(_pitch))
             _yaw = np.arctan2(_y_yaw, _x_yaw)
-            _imu_values = np.array([_yaw, _pitch, _roll,
-                                    _accel_x, _accel_y, _accel_z,
-                                    _gyro_x, _gyro_y, _gyro_z,
-                                    _mag_x, _mag_y, _mag_z])
-            time.sleep(0.1)
 
+            #print("Yaw deg", np.rad2deg(_yaw), "pitch deg", np.rad2deg(_pitch), "roll deg", np.rad2deg(_roll))
+            #print("Yaw rad", _yaw, "pitch rad", _pitch, "roll deg", _roll)
 
             #Get the sensor data as signed 24bit value (raw)
             _curr_pressure_raw = return_sign_24bit(0x5d, pressure_registers)
@@ -121,15 +118,15 @@ def imu_reader(q):
             #Get the temperature in celsius
             _curr_temp = 42.5 + (_curr_temp_raw / 480.0)
 
-            _ins_values = [_imu_values, _curr_altitude, _curr_pressure, _curr_temp]
+            _ins_values = [_yaw, _pitch, _roll, _curr_altitude, _curr_pressure, _curr_temp]
             q.put(_ins_values)
-            time.sleep(1)
-            del _ins_values, _curr_temp, _curr_altitude, _curr_pressure, _imu_values
+            time.sleep(0.01)
         else:
             _m9a, _m9g, _m9m, _temp, _press, _alt = fake_imu_generator()
             _imu_values = np.array([_m9a, _m9g, _m9m])
             _ins_values = [_imu_values, _alt, _press, _temp]
 
+        del _ins_values
 
 
 

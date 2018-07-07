@@ -3,19 +3,18 @@ from multiprocessing import Queue
 import sys, time, datetime
 from display.main_lcd import lcd_gps_data, lcd_imu1_data, lcd_imu2_data
 import numpy as np
+#import h5py
 from tools.imu_parser import imu_reader
 from tools.gps_parser import gps_reader
 from tools.imu_init import  imu_mean_generator
+
 __author__ = 'p3p1'
 __copyright__ = 'Copyright 2018 p3p1'
 __license__ = 'MIT'
 __version__ = '0.1'
 
-__timeout_queue__ = 3
-_timeout_gps_restart = 6000
-_timeout_gps_thread = 1
-_timeout_lcd_refresh_ = 4
-_timeout_save_data_ = 15
+__tout_store_data__ = .1
+__tout_lcd_update__ = .1
 
 def str2float(s, decs):
     try:
@@ -27,68 +26,49 @@ def print_on_lcd(gps_data, imu_data):
     while True:
         _gps_packet = gps_data.get()
         _imu_packet = imu_data.get()
-        print("GPS data")
-        print(_gps_packet)
-        print("IMU data")
-        print(_imu_packet)
-        print('Screen IMU1')
+        print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Print on e-ink firsts IMU data')
         lcd_imu1_data(_imu_packet)
-        time.sleep(_timeout_lcd_refresh_)
-        print('Screen IMU2')
+        time.sleep(__tout_lcd_update__)
+        print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Print on e-ink seconds IMU data')
         lcd_imu2_data(_imu_packet, _gps_packet)
-        time.sleep(_timeout_lcd_refresh_)
-        print('Screen GPS')
+        time.sleep(__tout_lcd_update__)
+        print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Print on e-ink GPS data')
         lcd_gps_data(_gps_packet)
-        time.sleep(_timeout_lcd_refresh_)
+        time.sleep(__tout_lcd_update__)
         del _gps_packet, _imu_packet
 
-def save_data(filename, gps_data, imu_data):
-    while True:
-        _gps_packet = gps_data.get()
-        _ins_packet = imu_data.get()
+def save_data(gps_data, imu_data):
+    __filename__ = '/home/pi/motonav-log/data_imu_gps-' + datetime.datetime.now().strftime("%Y_%m_%d-%H%M") + '.dat'
+    print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Start to log data in ' + __filename__)
+    #__tmp_array__ = np.zeros((26,))
+    #with h5py.File(__filename__, 'a') as f:
+        #dset = f.create_dataset('mydataset',data=__tmp_array__,maxshape=(None, None))
+    with open(__filename__,'ab') as f:
+        while True:
+            _gps_packet = gps_data.get()
+            _imu_packet = imu_data.get()
+            __tmp_array__ = np.empty((1,26),dtype=float)
 
-        _imu_values = _ins_packet[0]
+            k = 0
+            for i in np.arange(0, len(_imu_packet)):
+                if _imu_packet[i] is None:
+                    __tmp_array__[0,k] = np.nan
+                else:
+                    __tmp_array__[0,k] = _imu_packet[i]
+                k += 1
+            __tmp_gps_vars__ = _gps_packet[0]
+            for i in np.arange(0, len(__tmp_gps_vars__)):
+                if __tmp_gps_vars__[i] == 'n/a':
+                    __tmp_array__[0,k] = np.nan
+                else:
+                    __tmp_array__[0,k] = str2float(__tmp_gps_vars__[i], 6)
+                k += 1
 
-        if (_imu_values[0] is None) or (_imu_values[1] is None) or (_imu_values[2] is None):
-            __yaw__ = 0
-            __pitch__ = 0
-            __roll__ =  0
-        else:
-            __yaw__ = np.around(float(np.rad2deg(_imu_values[0])), decimals=2)
-            __pitch__ = np.around(float(np.rad2deg(_imu_values[1])), decimals=2)
-            __roll__ = np.around(float(np.rad2deg(_imu_values[2])), decimals=2)
-
-        if (_ins_packet[1] is None) or (_ins_packet[2] is None) or (_ins_packet[3] is None):
-            __baro__ = 0
-            __temp__ = 0
-            __alt_baro__ = 0
-        else:
-            __baro__ = np.around(float(_ins_packet[1]), decimals=1)
-            __temp__ = np.around(float(_ins_packet[3]), decimals=1)
-            __alt_baro__ = np.around(float(_ins_packet[2]), decimals=1)
-
-        _gps_values = _gps_packet[0]
-        __lat__ = str2float(_gps_values[0], 5)
-        __lon__ = str2float(_gps_values[1], 5)
-        __alt__ = str2float(_gps_values[2], 5)
-        __mode__ = str2float(_gps_values[3], 0)
-        __hdg__ = str2float(_gps_values[4], 1)
-        __spd__ = str2float(_gps_values[5], 1)
-        __clb__ = str2float(_gps_values[6], 1)
-        __erx__ = str2float(_gps_values[7], 1)
-        __ery__ = str2float(_gps_values[8], 1)
-        __erz__ = str2float(_gps_values[9], 1)
-        __ert__ = str2float(_gps_values[10], 1)
-
-        __tmp_array__ = np.array([__yaw__, __pitch__, __roll__, __baro__, __temp__, __alt_baro__,
-                                  __lat__, __lon__, __alt__, __mode__, __hdg__, __spd__, __clb__,
-                                  __erx__, __ery__, __erz__, __ert__])
-        np.savez_compressed(filename, data=__tmp_array__)
-        time.sleep(_timeout_save_data_)
-        del __tmp_array__, _gps_packet, _ins_packet, _imu_values
-        del __yaw__, __pitch__, __roll__, __baro__, __temp__, __alt_baro__
-        del __lat__, __lon__, __alt__, __mode__, __hdg__, __spd__, __clb__
-        del __erx__, __ery__, __erz__, __ert__
+            #dset.resize(dset.shape[0]+__tmp_array__.shape[0],axis=0)
+            #dset[__tmp_array__.shape[0]:]=__tmp_array__
+            np.savetxt(f,__tmp_array__,fmt='%6.6f',delimiter=',',newline='\n')
+            time.sleep(__tout_store_data__)
+            del _gps_packet, _imu_packet
 
 def init_nav():
     q_stat_bias_imu = Queue()
@@ -97,24 +77,28 @@ def init_nav():
     t_init_imu.join()
 
 def run_threads():
-    q_imu = Queue()
-    t_imu = threading.Thread(name='IMU Parsing', target=imu_reader, args=(q_imu, ))
-    q_gps = Queue()
-    t_gps = threading.Thread(name='GPS Parsing', target=gps_reader, args=(q_gps, ))
-    t_print = threading.Thread(name='Print data', target=print_on_lcd, args=(q_gps, q_imu, ))
+    q_imu = Queue(maxsize=1)
+    q_gps = Queue(maxsize=1)
 
-    #filename = 'log_data/' + datetime.datetime.now().strftime("%Y-%m%-%d")
-    #t_save = threading.Thread(name='Save data', target=save_data, args=(filename, q_gps, q_imu, ))
+    t_imu = threading.Thread(name='IMU Parsing', target=imu_reader, args=(q_imu,))
+    t_gps = threading.Thread(name='GPS Parsing', target=gps_reader, args=(q_gps,))
+    t_print = threading.Thread(name='Print data', target=print_on_lcd, args=(q_gps, q_imu,))
+    t_save = threading.Thread(name='Save data', target=save_data, args=(q_gps, q_imu,))
 
     t_imu.start()
-    t_print.start()
     t_gps.start()
-    #t_save.start()
+    t_print.start()
+    t_save.start()
+
+    print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Start IMU parser thread')
+    print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Start GPS parser thread')
+    print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Start e-ink printer thread')
+    print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Start logger data thread')
 
     t_imu.join()
-    t_print.join()
     t_gps.join()
-    #t_save.join()
+    #t_print.join()
+    t_save.join()
 
 if __name__ == '__main__':
     try:

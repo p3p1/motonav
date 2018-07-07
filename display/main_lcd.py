@@ -331,11 +331,11 @@ def lcd_imu2_data(ins_packet, gps_packet):
     _draw_black.line((10, 240, 390, 240), fill=0)
     _draw_black.line((200, 40, 200, 240), fill=0)
 
-    if (ins_packet[1] is None) or (ins_packet[2] is None) or (ins_packet[3] is None):
+    if (ins_packet[3] is None) or (ins_packet[4] is None) or (ins_packet[5] is None):
         __baro__ = 0
         _draw_red.text([10,260], text="N/A from baro!", fill=0, font=fontserifbold[24])
     else:
-        __baro__ = np.around(float(ins_packet[1]), decimals=1)
+        __baro__ = np.around(float(ins_packet[3]), decimals=1)
         _draw_black.text([10,260], text="Height: ", fill=0, font=fontserif[24])
         _tmp_str_text = str(__baro__) + ' m'
         _draw_red.text([90,260], text=_tmp_str_text, fill=0, font=fontserifbold[24])

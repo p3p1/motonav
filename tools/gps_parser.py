@@ -1,6 +1,6 @@
 import pynmea2
 import numpy as np
-#from gps3 import gps3
+import datetime
 import time
 import gpsd
 
@@ -46,7 +46,6 @@ def gps_reader(q):
 
                 __gps_vars__ = [__tmp_gps_vars__, gps_packet.get_time()]
                 q.put(__gps_vars__)
-                time.sleep(10)
             except gpsd.NoFixError:
                 __lat__ = 'n/a'
                 __lon__ = 'n/a'
@@ -65,8 +64,9 @@ def gps_reader(q):
 
                 __gps_vars__ = [__tmp_gps_vars__, _gps_time__]
                 q.put(__gps_vars__)
-                print('No GPS fix!')
-                time.sleep(10)
+                print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': No GPS fix')
+
+            time.sleep(0.01)
             del gps_packet
     else:
         lines = [line.rstrip('\n') for line in open(__filename_fake_data__)]

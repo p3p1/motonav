@@ -118,7 +118,9 @@ def imu_reader(q):
             #Get the temperature in celsius
             _curr_temp = 42.5 + (_curr_temp_raw / 480.0)
 
-            _ins_values = [_yaw, _pitch, _roll, _curr_altitude, _curr_pressure, _curr_temp]
+            _ins_values = [_yaw, _pitch, _roll, _curr_altitude, _curr_pressure, _curr_temp,
+                           _accel_x, _accel_y, _accel_z, _gyro_x, _gyro_y, _gyro_z,
+                           _mag_x, _mag_y, _mag_y]
             q.put(_ins_values)
             time.sleep(0.01)
         else:

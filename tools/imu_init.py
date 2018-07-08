@@ -1,5 +1,5 @@
 import FaBo9Axis_MPU9250 as MPU9250
-import time
+import time, datetime
 import numpy as np
 
 __author__ = 'p3p1'
@@ -7,38 +7,26 @@ __copyright__ = 'Copyright 2018 p3p1'
 __license__ = 'MIT'
 __version__ = '0.1'
 
-max_timeout_poll = 10*60
+max_timeout_poll = 3
 
-def imu_mean_generator(q):
+def imu_offset_generator():
     imu = MPU9250.MPU9250()
 
     time.sleep(10)
 
+    _pitch_arr = np.array([], dtype=float)
+    _yaw_arr = np.array([], dtype=float)
+    _roll_arr = np.array([], dtype=float)
+
+    print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Initialization IMU started.')
+
     start_time = time.time()
-    time.sleep(1)
-
-    _pitch_arr = []
-    _yaw_arr = []
-    _roll_arr = []
-
-    _init_status = False
-    _yaw_mean = np.nan
-    _pitch_mean = np.nan
-    _roll_mean = np.nan
-    _yaw_std = np.nan
-    _pitch_std = np.nan
-    _roll_std = np.nan
-
     while (time.time()-start_time) < max_timeout_poll:
             _accel = imu.readAccel()
-            #_gyro = imu.readGyro()
             _mag = imu.readMagnet()
             _accel_x = _accel['x']
             _accel_y = _accel['y']
             _accel_z = _accel['z']
-            #_gyro_x = _gyro['x']
-            #_gyro_y = _gyro['y']
-            #_gyro_z = _gyro['z']
             _mag_x = _mag['x']
             _mag_y = _mag['y']
             _mag_z = _mag['z']
@@ -56,10 +44,7 @@ def imu_mean_generator(q):
             _roll_arr = np.append(_roll_arr, _roll)
             _yaw_arr = np.append(_yaw_arr, _yaw)
 
-            _ins_status = [_yaw_mean, _pitch_mean, _roll_mean, _yaw_std, _pitch_std, _roll_std, _init_status]
-            q.put(_ins_status)
-
-            del _yaw, _pitch, _roll
+            #print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Initialization IMU in progress.')
 
     _yaw_mean = np.mean(_yaw_arr)
     _yaw_std = np.std(_yaw_arr)
@@ -70,10 +55,17 @@ def imu_mean_generator(q):
     _roll_mean = np.mean(_roll_arr)
     _roll_std = np.std(_roll_arr)
 
-    _init_status = True
+    if isinstance(_yaw_mean, float) and isinstance(_pitch_mean, float) and isinstance(_roll_mean, float):
+        _ins_status = [_yaw_mean, _pitch_mean, _roll_mean, _yaw_std, _pitch_std, _roll_std, True]
+        print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': IMU initialized.')
+        print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': IMU offset: ' + ", ".join('%5.5f'%x for x in _ins_status))
+    else:
+        _ins_status = [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, False]
+        print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': IMU initialization failed.')
 
-    _ins_status = [_yaw_mean, _pitch_mean, _roll_mean, _yaw_std, _pitch_std, _roll_std, _init_status]
-    q.put(_ins_status)
+
+    return _ins_status
+
 
 
 

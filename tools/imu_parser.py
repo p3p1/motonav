@@ -63,7 +63,7 @@ def return_sign_16bit(address, registers):
 
     return x_val
 
-def imu_reader(q):
+def imu_reader(q, offset):
     _fake = False
     if not _fake:
         imu = MPU9250.MPU9250()
@@ -118,8 +118,10 @@ def imu_reader(q):
             #Get the temperature in celsius
             _curr_temp = 42.5 + (_curr_temp_raw / 480.0)
 
-            _ins_values = [_yaw, _pitch, _roll, _curr_altitude, _curr_pressure, _curr_temp,
-                           _accel_x, _accel_y, _accel_z, _gyro_x, _gyro_y, _gyro_z,
+            _ins_values = [(_yaw-offset[0]), (_pitch-offset[1]), (_roll-offset[2]),
+                           _curr_altitude, _curr_pressure, _curr_temp,
+                           _accel_x, _accel_y, _accel_z,
+                           _gyro_x, _gyro_y, _gyro_z,
                            _mag_x, _mag_y, _mag_y]
             q.put(_ins_values)
             time.sleep(0.01)

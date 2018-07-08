@@ -3,8 +3,8 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 import numpy as np
-import time
-
+from tools.imu_init import imu_offset_generator
+from tools.gps_init import gps_init_fix
 COLORED = 1
 UNCOLORED = 0
 
@@ -311,6 +311,7 @@ def lcd_imu1_data(ins_packet):
     #------------------------------#
     epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
     del _imu_values
+
 def lcd_imu2_data(ins_packet, gps_packet):
     epd = epd4in2b.EPD()
     epd.init()
@@ -568,20 +569,21 @@ def lcd_gps_data(gps_packet):
     #_sat_list = gps_packet[1]
     _sat_list = []
     _gps_data = gps_packet[0]
+    _nmode_str = 'No GPS fix'
+    _nlat_str = 'No GPS fix!'
+    _nlon_str = 'No GPS fix!'
+    _nalt_str = 'No GPS fix!'
+    _nhdg_str = 'n/a'
+    _nspd_str = 'n/a'
+    _nclb_str = 'n/a'
+    _nerx_str = 'n/a'
+    _nery_str = 'n/a'
+    _nerz_str = 'n/a'
+    _nert_str = 'n/a'
+    _ngps_time_str = 'n/a'
 
     if int(_gps_data[3]) == 1:
-        _nmode_str = 'No GPS fix'
-        _nlat_str = 'No GPS fix!'
-        _nlon_str = 'No GPS fix!'
-        _nalt_str = 'No GPS fix!'
-        _nhdg_str = 'n/a'
-        _nspd_str = 'n/a'
-        _nclb_str = 'n/a'
-        _nerx_str = 'n/a'
-        _nery_str = 'n/a'
-        _nerz_str = 'n/a'
-        _nert_str = 'n/a'
-        _ngps_time_str = 'n/a'
+        pass
     elif int(_gps_data[3]) == 2 or int(_gps_data[3]) == 3:
         if int(_gps_data[3]) == 2:
             _nmode_str = '2D Fix'
@@ -681,62 +683,63 @@ def lcd_gps_data(gps_packet):
 
     epd.display_frame(epd.get_frame_buffer(_image_black_gps),epd.get_frame_buffer(_image_red_gps))
 
-def init_lcd(imu_init_status):
+def init_nav():
     epd = epd4in2b.EPD()
     epd.init()
 
     #------------------------------#
     #---- Black and red images ----#
     #------------------------------#
-    _image_red_gps = Image.new('1', (epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), 255)    # 255: clear the frame
-    _draw_red = ImageDraw.Draw(_image_red_gps)
-    _image_black_gps = Image.new('1', (epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), 255)    # 255: clear the frame
-    _draw_black = ImageDraw.Draw(_image_black_gps)
+    _image_red_imu = Image.new('1', (epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), 255)    # 255: clear the frame
+    _draw_red = ImageDraw.Draw(_image_red_imu)
+    _image_black_imu = Image.new('1', (epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), 255)    # 255: clear the frame
+    _draw_black = ImageDraw.Draw(_image_black_imu)
 
     #------------------------------#
     #---- Text and text boxes -----#
     #------------------------------#
-    _draw_black.rectangle((0, 6, epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT-6), fill=0)
-    _draw_black.text((30, epd4in2b.EPD_HEIGHT-40), 'Welcome back, Giuseppe!', font=fontserifbold[40], fill=255)
-
-
-
-    ##Init IMU
-    _draw_black.text((30, epd4in2b.EPD_HEIGHT+20), 'Initialization inertial... please wait!', font=fontserifbold[30], fill=255)
+    ##Init IMU and GPS
+    _draw_black.rectangle((0, 0, epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), fill=0)
+    _draw_black.text((20, 100), 'Welcome back, Giuseppe!', font=fontserifbold[30], fill=255)
+    _draw_black.text((20, 160), 'Initialization inertial... please wait!', font=fontserifbold[18], fill=255)
+    _draw_black.text((20, 180), 'Initialization GPS... please wait!', font=fontserifbold[18], fill=255)
     epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
+    _ins_status = imu_offset_generator()
+    _gps_status = gps_init_fix()
+    _init_ins_status = _ins_status[6]
+    _init_gps_status = _gps_status[2]
 
+    ##Print results
+    _draw_black.rectangle((0, 0, epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), fill=0)
 
-    while (imu_init == False) and (_delta_time_poll_data <= _max_timeout):
-        time.sleep(1)
-        _delta_time_poll_data = time.time() - _start_time_poll_data
-
-    if _delta_time_poll_data > _max_timeout:
-        _draw_black.text((230, epd4in2b.EPD_HEIGHT+20), 'IMU NOT INITIALIZED!!!', font=fontserifbold[30], fill=255)
+    _draw_black.text((20, 100), 'Welcome back, Giuseppe!', font=fontserifbold[30], fill=255)
+    if _init_ins_status:
+        _draw_black.text((20, 160), 'Initialization inertial completed!', font=fontserifbold[18], fill=255)
+        _draw_black.text((20, 180), 'Means - Yaw: ', font=fontserifbold[18], fill=255)
+        _draw_black.text((130, 180), str(np.around(np.rad2deg(_ins_status[0]), decimals=2)), font=fontserifbold[18], fill=255)
+        _draw_black.text((190, 180), 'Pitch: ', font=fontserifbold[18], fill=255)
+        _draw_black.text((240, 180), str(np.around(np.rad2deg(_ins_status[1]), decimals=2)), font=fontserifbold[18], fill=255)
+        _draw_black.text((300, 180), 'Roll: ', font=fontserifbold[18], fill=255)
+        _draw_black.text((340, 180), str(np.around(np.rad2deg(_ins_status[2]), decimals=2)), font=fontserifbold[18], fill=255)
+        _draw_black.text((20, 200), 'STD - Yaw: ', font=fontserifbold[18], fill=255)
+        _draw_black.text((110, 200), str(np.around(np.rad2deg(_ins_status[3]), decimals=2)), font=fontserifbold[18], fill=255)
+        _draw_black.text((170, 200), 'Pitch: ', font=fontserifbold[18], fill=255)
+        _draw_black.text((220, 200), str(np.around(np.rad2deg(_ins_status[4]), decimals=2)), font=fontserifbold[18], fill=255)
+        _draw_black.text((280, 200), 'Roll: ', font=fontserifbold[18], fill=255)
+        _draw_black.text((320, 200), str(np.around(np.rad2deg(_ins_status[5]), decimals=2)), font=fontserifbold[18], fill=255)
     else:
-        _draw_black.text((230, epd4in2b.EPD_HEIGHT+20), 'OK!!!', font=fontserifbold[30], fill=255)
+        _draw_black.text((20, 160), 'Initialization failed! Check IMU wiring!', font=fontserifbold[18], fill=255)
+
+    if _init_gps_status:
+        _draw_black.text((20, 220), 'First GPS fix obtained!', font=fontserifbold[18], fill=255)
+        _draw_black.text((20, 240), 'Coordinate - Lat: ', font=fontserifbold[18], fill=255)
+        _draw_black.text((160, 240), str(np.around(_gps_status[0], decimals=4)), font=fontserifbold[18], fill=255)
+        _draw_black.text((240, 240), 'Lon: ', font=fontserifbold[18], fill=255)
+        _draw_black.text((280, 240), str(np.around(_gps_status[1], decimals=4)), font=fontserifbold[18], fill=255)
+
     epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
 
-
-    ###Init GPS
-    #_draw_black.text((30, epd4in2b.EPD_HEIGHT+20), 'Initialization GPS ...', font=fontserifbold[30], fill=255)
-    #epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
-
-    #_max_timeout = 300
-
-    #_start_time_poll_data = time.time()
-    #time.sleep(1)
-    #_delta_time_poll_data = time.time() - _start_time_poll_data
-
-    #while (imu_init == False) and (_delta_time_poll_data <= _max_timeout):
-    #    time.sleep(1)
-    #    _delta_time_poll_data = time.time() - _start_time_poll_data
-
-    #if _delta_time_poll_data > _max_timeout:
-    #    _draw_black.text((230, epd4in2b.EPD_HEIGHT+20), 'NO DATA FROM GPS!!!', font=fontserifbold[30], fill=255)
-    #else:
-    #    _draw_black.text((230, epd4in2b.EPD_HEIGHT+20), 'OK!!!', font=fontserifbold[30], fill=255)
-    #epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
-
+    return _ins_status[0:3]
 #if __name__ == '__main__':
 #    try:
 #        #lcd_imu1_data()

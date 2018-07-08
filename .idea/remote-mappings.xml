@@ -19,13 +19,7 @@
             </list>
           </settings>
         </remote-mappings>
-        <remote-mappings server-id="python@sftp://pi@192.168.1.71:8585/usr/bin/python3">
-          <settings>
-            <list>
-              <mapping local-root="$PROJECT_DIR$" remote-root="/home/pi/motonav" />
-            </list>
-          </settings>
-        </remote-mappings>
+        <remote-mappings server-id="python@sftp://pi@192.168.1.71:8585/usr/bin/python3" />
       </list>
     </list>
   </component>

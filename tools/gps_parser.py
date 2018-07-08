@@ -10,6 +10,7 @@ __license__ = 'MIT'
 __version__ = '0.1'
 
 __filename_fake_data__ = 'fake_data/random_240418.nmea'
+
 def gps_reader(q):
     fake = False
     if not fake:
@@ -64,7 +65,7 @@ def gps_reader(q):
 
                 __gps_vars__ = [__tmp_gps_vars__, _gps_time__]
                 q.put(__gps_vars__)
-                print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': No GPS fix')
+                print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': No GPS fix.')
 
             time.sleep(0.01)
             del gps_packet

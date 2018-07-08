@@ -334,22 +334,31 @@ def lcd_imu2_data(ins_packet, gps_packet):
 
     if (ins_packet[3] is None) or (ins_packet[4] is None) or (ins_packet[5] is None):
         __baro__ = 0
-        _draw_red.text([10,260], text="N/A from baro!", fill=0, font=fontserifbold[24])
+        _draw_red.text([10,240], text="N/A from baro!", fill=0, font=fontserifbold[22])
+        _draw_red.text([10,260], text="N/A from baro!", fill=0, font=fontserifbold[22])
     else:
         __baro__ = np.around(float(ins_packet[3]), decimals=1)
-        _draw_black.text([10,260], text="Height: ", fill=0, font=fontserif[24])
+        _draw_black.text([10,250], text="Height: ", fill=0, font=fontserif[22])
         _tmp_str_text = str(__baro__) + ' m'
-        _draw_red.text([90,260], text=_tmp_str_text, fill=0, font=fontserifbold[24])
+        _draw_red.text([90,250], text=_tmp_str_text, fill=0, font=fontserifbold[22])
+        __press__ = np.around((float(ins_packet[4])/1013.25), decimals=1)
+        _draw_black.text([10,270], text="Press: ", fill=0, font=fontserif[22])
+        _tmp_str_text = str(__press__) + ' atm'
+        _draw_red.text([90,270], text=_tmp_str_text, fill=0, font=fontserifbold[22])
+        __temp__ = np.around(float(ins_packet[5]), decimals=1)
+        _draw_black.text([180,270], text="Temp: ", fill=0, font=fontserif[22])
+        _tmp_str_text = str(__temp__) + ' C'
+        _draw_red.text([260,270], text=_tmp_str_text, fill=0, font=fontserifbold[22])
 
     _gps_data = gps_packet[0]
     if _gps_data[5] == 'n/a':
         __speed__ = 0
-        _draw_red.text([190,260], text="N/A from GPS!", fill=0, font=fontserifbold[24])
+        _draw_red.text([190,250], text="N/A from GPS!", fill=0, font=fontserifbold[22])
     else:
         __speed__ = np.around((float(_gps_data[5])*3.6), decimals=1)
-        _draw_black.text([190,260], text="Speed: ", fill=0, font=fontserif[24])
+        _draw_black.text([190,250], text="Speed: ", fill=0, font=fontserif[22])
         _tmp_str_text = str(__speed__) + ' km/h'
-        _draw_red.text([260,260], text=_tmp_str_text, fill=0, font=fontserifbold[24])
+        _draw_red.text([260,250], text=_tmp_str_text, fill=0, font=fontserifbold[22])
 
     #------------------------------#
     #--------  Altimeter  ---------#

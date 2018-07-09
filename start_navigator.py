@@ -50,7 +50,7 @@ def str2float(s, decs):
     except ValueError:
         return float('nan')
 
-def print_on_lcd(gps_data, imu_data):
+def print_on_lcd(gps_data, imu_data, ble_status):
     while True:
         _gps_packet = gps_data.get()
         _imu_packet = imu_data.get()
@@ -65,9 +65,15 @@ def print_on_lcd(gps_data, imu_data):
         time.sleep(__tout_lcd_update__)
         del _gps_packet, _imu_packet
 
-def save_data(gps_data, imu_data):
+def save_data(gps_data, imu_data, ble_status):
     __filename__ = '/home/pi/motonav-log/data_imu_gps-' + datetime.datetime.now().strftime("%Y_%m_%d-%H%M") + '.dat'
     print(datetime.datetime.now().strftime('%b-%d_%H:%M') + ': Start to log data in ' + __filename__ + '.')
+
+    _ble_status = ble_status.get()
+    if _ble_status:
+        print('BLE in range no stop LCD')
+    else:
+        print('BLE out of range stop LCD')
 
     with open(__filename__,'ab') as f:
         while True:
@@ -103,7 +109,7 @@ def run_threads(ins_offset):
     t_gps = threading.Thread(name='GPS Parsing', target=gps_reader, args=(q_gps,))
     t_ble = threading.Thread(name='BLE Scanner', target=ble_scanner, args=(q_ble,))
     t_print = threading.Thread(name='Print data on LCD', target=print_on_lcd, args=(q_gps, q_imu,))
-    t_save = threading.Thread(name='Save data', target=save_data, args=(q_gps, q_imu,))
+    t_save = threading.Thread(name='Save data', target=save_data, args=(q_gps, q_imu, q_ble,))
 
     t_imu.start()
     t_gps.start()

@@ -346,7 +346,7 @@ def lcd_imu2_data(ins_packet, gps_packet):
         _tmp_str_text = str(__press__) + ' atm'
         _draw_red.text([90,270], text=_tmp_str_text, fill=0, font=fontserifbold[22])
         __temp__ = np.around(float(ins_packet[5]), decimals=1)
-        _draw_black.text([180,270], text="Temp: ", fill=0, font=fontserif[22])
+        _draw_black.text([190,270], text="Temp: ", fill=0, font=fontserif[22])
         _tmp_str_text = str(__temp__) + ' C'
         _draw_red.text([260,270], text=_tmp_str_text, fill=0, font=fontserifbold[22])
 

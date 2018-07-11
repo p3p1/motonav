@@ -7,7 +7,7 @@ __copyright__ = 'Copyright 2018 p3p1'
 __license__ = 'MIT'
 __version__ = '0.1'
 
-max_timeout_poll = 3
+max_timeout_poll = 5*60
 
 def imu_offset_generator():
     imu = MPU9250.MPU9250()

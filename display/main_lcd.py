@@ -95,9 +95,16 @@ def lcd_imu1_data(ins_packet):
     ###Lower semi-circle, outer and inner
     _coord_circle = []
     #Calulate delta_angle for pitch angle
-    _delta_angle_rad = np.arcsin(__pitch__/_inner_r)
+    if __pitch__/_inner_r < -1:
+        _ratio_delta_angle = -.95
+    elif __pitch__/_inner_r > 1:
+        _ratio_delta_angle = .95
+    else:
+        _ratio_delta_angle = __pitch__/_inner_r
+
+    _delta_angle_rad = np.arcsin(_ratio_delta_angle)
     _delta_angle_deg = np.rad2deg(_delta_angle_rad)
-    _delta_angle_deg = int(_delta_angle_deg)
+
     for i in np.arange(0-_delta_angle_deg,180+_delta_angle_deg):
         _x = _x_cent_ah + _inner_r*np.cos((np.deg2rad(i+__roll__)))
         _y = _y_cent_ah + _inner_r*np.sin((np.deg2rad(i+__roll__)))
@@ -724,31 +731,57 @@ def init_nav():
     _draw_black.text((20, 100), 'Welcome back, Giuseppe!', font=fontserifbold[30], fill=255)
     if _init_ins_status:
         _draw_black.text((20, 160), 'Initialization inertial completed!', font=fontserifbold[18], fill=255)
-        _draw_black.text((20, 180), 'Means - Yaw: ', font=fontserifbold[18], fill=255)
-        _draw_black.text((130, 180), str(np.around(np.rad2deg(_ins_status[0]), decimals=2)), font=fontserifbold[18], fill=255)
-        _draw_black.text((190, 180), 'Pitch: ', font=fontserifbold[18], fill=255)
-        _draw_black.text((240, 180), str(np.around(np.rad2deg(_ins_status[1]), decimals=2)), font=fontserifbold[18], fill=255)
-        _draw_black.text((300, 180), 'Roll: ', font=fontserifbold[18], fill=255)
-        _draw_black.text((340, 180), str(np.around(np.rad2deg(_ins_status[2]), decimals=2)), font=fontserifbold[18], fill=255)
-        _draw_black.text((20, 200), 'STD - Yaw: ', font=fontserifbold[18], fill=255)
-        _draw_black.text((110, 200), str(np.around(np.rad2deg(_ins_status[3]), decimals=2)), font=fontserifbold[18], fill=255)
-        _draw_black.text((170, 200), 'Pitch: ', font=fontserifbold[18], fill=255)
-        _draw_black.text((220, 200), str(np.around(np.rad2deg(_ins_status[4]), decimals=2)), font=fontserifbold[18], fill=255)
-        _draw_black.text((280, 200), 'Roll: ', font=fontserifbold[18], fill=255)
-        _draw_black.text((320, 200), str(np.around(np.rad2deg(_ins_status[5]), decimals=2)), font=fontserifbold[18], fill=255)
+        _draw_black.text((20, 180), 'Means - Yaw: ', font=fontmono[18], fill=255)
+        _draw_black.text((130, 180), str(np.around(np.rad2deg(_ins_status[0]), decimals=2)), font=fontmono[18], fill=255)
+        _draw_black.text((190, 180), 'Pitch: ', font=fontmono[18], fill=255)
+        _draw_black.text((240, 180), str(np.around(np.rad2deg(_ins_status[1]), decimals=2)), font=fontmono[18], fill=255)
+        _draw_black.text((300, 180), 'Roll: ', font=fontmono[18], fill=255)
+        _draw_black.text((340, 180), str(np.around(np.rad2deg(_ins_status[2]), decimals=2)), font=fontmono[18], fill=255)
+        _draw_black.text((20, 200), 'STD - Yaw: ', font=fontmono[18], fill=255)
+        _draw_black.text((110, 200), str(np.around(np.rad2deg(_ins_status[3]), decimals=2)), font=fontmono[18], fill=255)
+        _draw_black.text((170, 200), 'Pitch: ', font=fontmono[18], fill=255)
+        _draw_black.text((220, 200), str(np.around(np.rad2deg(_ins_status[4]), decimals=2)), font=fontmono[18], fill=255)
+        _draw_black.text((280, 200), 'Roll: ', font=fontmono[18], fill=255)
+        _draw_black.text((320, 200), str(np.around(np.rad2deg(_ins_status[5]), decimals=2)), font=fontmono[18], fill=255)
     else:
-        _draw_black.text((20, 160), 'Initialization failed! Check IMU wiring!', font=fontserifbold[18], fill=255)
+        _draw_black.text((20, 160), 'Initialization failed! Check IMU wiring!', font=fontmono[18], fill=255)
 
     if _init_gps_status:
-        _draw_black.text((20, 220), 'First GPS fix obtained!', font=fontserifbold[18], fill=255)
-        _draw_black.text((20, 240), 'Coordinate - Lat: ', font=fontserifbold[18], fill=255)
-        _draw_black.text((160, 240), str(np.around(_gps_status[0], decimals=4)), font=fontserifbold[18], fill=255)
-        _draw_black.text((240, 240), 'Lon: ', font=fontserifbold[18], fill=255)
-        _draw_black.text((280, 240), str(np.around(_gps_status[1], decimals=4)), font=fontserifbold[18], fill=255)
+        _draw_black.text((20, 220), 'First GPS fix obtained!', font=fontmono[18], fill=255)
+        _draw_black.text((20, 240), 'Coordinate - Lat: ', font=fontmono[18], fill=255)
+        _draw_black.text((160, 240), str(np.around(_gps_status[0], decimals=4)), font=fontmono[18], fill=255)
+        _draw_black.text((240, 240), 'Lon: ', font=fontmono[18], fill=255)
+        _draw_black.text((280, 240), str(np.around(_gps_status[1], decimals=4)), font=fontmono[18], fill=255)
 
     epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
 
     return _ins_status[0:3]
+
+def goodbye():
+    epd = epd4in2b.EPD()
+    epd.init()
+
+    #------------------------------#
+    #---- Black and red images ----#
+    #------------------------------#
+    _image_red_imu = Image.new('1', (epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), 255)    # 255: clear the frame
+    _draw_red = ImageDraw.Draw(_image_red_imu)
+    _image_black_imu = Image.new('1', (epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), 255)    # 255: clear the frame
+    _draw_black = ImageDraw.Draw(_image_black_imu)
+
+    #------------------------------#
+    #---- Text and text boxes -----#
+    #------------------------------#
+    _draw_black.rectangle((0, 0, epd4in2b.EPD_WIDTH, epd4in2b.EPD_HEIGHT), fill=0)
+    _draw_black.text((70, 100), 'Goodbye, Giuseppe!', font=fontserifbold[30], fill=255)
+    _draw_black.text((120, 140), 'See you soon!', font=fontserifbold[24], fill=255)
+    _draw_black.text((20, 190), 'Stop parsing IMU data.', font=fontmono[18], fill=255)
+    _draw_black.text((20, 210), 'Stop parsing GPS data.', font=fontmono[18], fill=255)
+    _draw_black.text((20, 230), 'Stop printing data on LCD.', font=fontmono[18], fill=255)
+    _draw_black.text((20, 250), 'Stop logging data.', font=fontmono[18], fill=255)
+
+    epd.display_frame(epd.get_frame_buffer(_image_black_imu),epd.get_frame_buffer(_image_red_imu))
+
 #if __name__ == '__main__':
 #    try:
 #        #lcd_imu1_data()
